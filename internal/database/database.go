@@ -15,12 +15,9 @@ type DB struct {
 
 type DBStructure struct {
 	Chirps map[int]Chirp `json:"chirps"`
+  Users map[int]User `json:"users"`
 }
 
-type Chirp struct {
-	Id   int    `json:"id"`
-	Body string `json:"body"`
-}
 
 var idCounter = 0
 
@@ -39,62 +36,6 @@ func NewDB(path string) (*DB, error) {
 	return db, nil
 }
 
-func (db *DB) CreateChirp(body string) (Chirp, error) {
-	db.mux.Lock()
-	defer db.mux.Unlock()
-
-	dbStructure, err := db.loadDB()
-	if err != nil {
-		return Chirp{}, err
-	}
-
-	idCounter++
-
-	chirp := Chirp{
-		Id:   idCounter,
-		Body: body,
-	}
-
-	dbStructure.Chirps[idCounter] = chirp
-
-	err = db.writeDB(dbStructure)
-	if err != nil {
-		return Chirp{}, err
-	}
-
-	return chirp, nil
-}
-
-// GetChirps returns all chirps in the database
-func (db *DB) GetChirps() ([]Chirp, error) {
-	dbStructure, err := db.loadDB()
-	if err != nil {
-		return []Chirp{}, err
-	}
-
-	chirps := []Chirp{}
-
-	for _, chirp := range dbStructure.Chirps {
-		chirps = append(chirps, chirp)
-	}
-
-	return chirps, nil
-}
-
-func (db *DB) GetChirp(id int) (Chirp, error) {
-	dbStructure, err := db.loadDB()
-	if err != nil {
-		return Chirp{}, err
-	}
-
-	chirp, ok := dbStructure.Chirps[id]
-	if !ok {
-		return Chirp{}, errors.New("Chirp does not exist")
-	}
-
-	return chirp, nil
-}
-
 // ensureDB creates a new database file if it doesn't exist
 func (db *DB) ensureDB() error {
 	_, err := os.ReadFile(db.path)
@@ -104,6 +45,7 @@ func (db *DB) ensureDB() error {
 
 		emptyDb := DBStructure{
 			Chirps: map[int]Chirp{},
+      Users: map[int]User{},
 		}
 		contents, err := json.Marshal(emptyDb)
 
