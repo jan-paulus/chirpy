@@ -2,8 +2,6 @@ package database
 
 import (
 	"errors"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
@@ -12,16 +10,8 @@ type User struct {
 	Password string `json:"password"`
 }
 
-func (db *DB) CreateUser(email, password string) (User, error) {
-	db.mux.Lock()
-	defer db.mux.Unlock()
-
+func (db *DB) CreateUser(email, hashedPassword string) (User, error) {
 	dbStructure, err := db.loadDB()
-	if err != nil {
-		return User{}, err
-	}
-
-	hash, err := hashPassword(password)
 	if err != nil {
 		return User{}, err
 	}
@@ -31,7 +21,7 @@ func (db *DB) CreateUser(email, password string) (User, error) {
 	user := User{
 		Id:       idCounter,
 		Email:    email,
-		Password: hash,
+		Password: hashedPassword,
 	}
 
 	dbStructure.Users[idCounter] = user
@@ -86,17 +76,27 @@ func (db *DB) GetUserByEmail(email string) (User, error) {
 	}
 
 	return User{}, errors.New("User does not exist")
-
 }
 
-func hashPassword(password string) (string, error) {
-	var passwordBytes = []byte(password)
-	hashedPasswordBytes, err := bcrypt.GenerateFromPassword(passwordBytes, bcrypt.MinCost)
-	return string(hashedPasswordBytes), err
+func (db *DB) UpdateUser(id int, email, hashedPassword string) (User, error) {
+	dbStructure, err := db.loadDB()
+	if err != nil {
+		return User{}, err
+	}
 
-}
+	user, ok := dbStructure.Users[id]
+	if !ok {
+		return User{}, errors.New("User does not exist.")
+	}
 
-func doPasswordsMatch(hashedPassword, currPassword string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(currPassword))
-	return err == nil
+  user.Email = email
+  user.Password = hashedPassword
+	dbStructure.Users[id] = user
+
+	err = db.writeDB(dbStructure)
+	if err != nil {
+		return User{}, err
+	}
+
+	return user, nil
 }

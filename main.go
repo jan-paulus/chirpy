@@ -26,8 +26,8 @@ func main() {
 	db, err := database.NewDB("database.json")
 	if err != nil {
 		log.Fatalf("Failed to connect to DB: %s", err)
-	}
 
+	}
 	cfg := apiConfig{
 		fileserverHits: 0,
 		DB:             db,
@@ -38,16 +38,19 @@ func main() {
 	fsHandler := http.StripPrefix("/app", http.FileServer(http.Dir(filepathRoot)))
 	mux.Handle("/app/*", cfg.middlewareMetricsInc(fsHandler))
 
+	mux.HandleFunc("GET /api/healthz", handlerReadiness)
+	mux.HandleFunc("GET /api/reset", cfg.handlerMetricsReset)
+
+	mux.HandleFunc("POST /api/login", cfg.handlerLoginUser)
+
+	mux.HandleFunc("POST /api/users", cfg.handlerCreateUser)
+	mux.HandleFunc("PUT /api/users", cfg.handlerUpdateUser)
+
 	mux.HandleFunc("POST /api/chirps", cfg.handlerCreateChirp)
 	mux.HandleFunc("GET /api/chirps", cfg.handlerGetChirps)
 	mux.HandleFunc("GET /api/chirps/{chirpID}", cfg.handlerGetChirp)
 
-	mux.HandleFunc("POST /api/users", cfg.handlerCreateUser)
-	mux.HandleFunc("POST /api/login", cfg.handlerLoginUser)
-
-	mux.HandleFunc("GET /api/healthz", handlerReadiness)
 	mux.HandleFunc("GET /admin/metrics", cfg.handlerMetrics)
-	mux.HandleFunc("/api/reset", cfg.handlerMetricsReset)
 
 	corsMux := middlewareCors(mux)
 
