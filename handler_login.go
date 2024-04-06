@@ -58,33 +58,4 @@ func (cfg *apiConfig) handlerLoginUser(w http.ResponseWriter, r *http.Request) {
 		Email: user.Email,
 		Token: token,
 	})
-
-	// expiresAt := &jwt.NumericDate{}
-	//
-	// if params.ExpiresInSeconds != 0 {
-	// 	expiresAt = jwt.NewNumericDate(time.Now().UTC().Add(time.Second * time.Duration(params.ExpiresInSeconds)))
-	// } else {
-	// 	expiresAt = jwt.NewNumericDate(time.Now().UTC().Add(time.Hour * 24))
-	// }
-	//
-	// claims := &jwt.RegisteredClaims{
-	// 	Issuer:    "chirpy",
-	// 	Subject:   strconv.Itoa(user.Id),
-	// 	IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
-	// 	ExpiresAt: expiresAt,
-	// }
-	// token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	// signedString, err := token.SignedString([]byte(cfg.jwtSecret))
-	//
-	// if err != nil {
-	// 	respondWithError(w, http.StatusUnauthorized, "Failed to authorize.")
-	// 	return
-	// }
-	//
-	// responseBody := response{
-	// 	Email: user.Email,
-	// 	Id:    user.Id,
-	// 	Token: signedString,
-	// }
-	// respondWithJSON(w, http.StatusOK, responseBody)
 }
