@@ -24,6 +24,12 @@ Returns metrics of the system
 
 Resets the metrics of the system
 
+### Webhooks
+
+#### POST /api/polka/webhooks
+
+Webhook used to upgrade users to Chirpy Red.
+
 ### Auth
 
 #### POST /api/login
