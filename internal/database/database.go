@@ -14,12 +14,10 @@ type DB struct {
 }
 
 type DBStructure struct {
-	Chirps map[int]Chirp `json:"chirps"`
-  Users map[int]User `json:"users"`
+	Chirps        map[int]Chirp           `json:"chirps"`
+	Users         map[int]User            `json:"users"`
+	RefreshTokens map[string]RefreshToken `json:"refresh_tokens"`
 }
-
-
-var idCounter = 0
 
 func NewDB(path string) (*DB, error) {
 	db := &DB{
@@ -44,8 +42,9 @@ func (db *DB) ensureDB() error {
 		log.Printf("%s does not exist, creating new...", db.path)
 
 		emptyDb := DBStructure{
-			Chirps: map[int]Chirp{},
-      Users: map[int]User{},
+			Chirps:        map[int]Chirp{},
+			Users:         map[int]User{},
+			RefreshTokens: map[string]RefreshToken{},
 		}
 		contents, err := json.Marshal(emptyDb)
 

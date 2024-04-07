@@ -10,21 +10,23 @@ type User struct {
 	Password string `json:"password"`
 }
 
+var userIdCounter = 0
+
 func (db *DB) CreateUser(email, hashedPassword string) (User, error) {
 	dbStructure, err := db.loadDB()
 	if err != nil {
 		return User{}, err
 	}
 
-	idCounter++
+	userIdCounter++
 
 	user := User{
-		Id:       idCounter,
+		Id:       userIdCounter,
 		Email:    email,
 		Password: hashedPassword,
 	}
 
-	dbStructure.Users[idCounter] = user
+	dbStructure.Users[userIdCounter] = user
 
 	err = db.writeDB(dbStructure)
 	if err != nil {

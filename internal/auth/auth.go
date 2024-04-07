@@ -29,11 +29,11 @@ func CheckPasswordHash(password, hash string) error {
 }
 
 // MakeJWT -
-func MakeJWT(userID int, tokenSecret string, expiresIn time.Duration) (string, error) {
+func MakeJWT(issuer string, userID int, tokenSecret string, expiresIn time.Duration) (string, error) {
 	signingKey := []byte(tokenSecret)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
-		Issuer:    "chirpy",
+		Issuer:    issuer,
 		IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
 		ExpiresAt: jwt.NewNumericDate(time.Now().UTC().Add(expiresIn)),
 		Subject:   fmt.Sprintf("%d", userID),
@@ -42,7 +42,7 @@ func MakeJWT(userID int, tokenSecret string, expiresIn time.Duration) (string, e
 }
 
 // ValidateJWT -
-func ValidateJWT(tokenString, tokenSecret string) (string, error) {
+func ValidateJWT(tokenString, tokenSecret string) (issuer, subject string, err error) {
 	claimsStruct := jwt.RegisteredClaims{}
 	token, err := jwt.ParseWithClaims(
 		tokenString,
@@ -50,15 +50,20 @@ func ValidateJWT(tokenString, tokenSecret string) (string, error) {
 		func(token *jwt.Token) (interface{}, error) { return []byte(tokenSecret), nil },
 	)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	userIDString, err := token.Claims.GetSubject()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	return userIDString, nil
+	issuer, err = token.Claims.GetIssuer()
+	if err != nil {
+		return "", "", err
+	}
+
+	return issuer, userIDString, nil
 }
 
 // GetBearerToken -

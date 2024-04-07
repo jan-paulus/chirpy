@@ -24,8 +24,13 @@ func (cfg *apiConfig) handlerUpdateUser(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	subject, err := auth.ValidateJWT(token, cfg.jwtSecret)
+	issuer, subject, err := auth.ValidateJWT(token, cfg.jwtSecret)
 	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't validate JWT")
+		return
+	}
+
+	if issuer != "chirpy-access" {
 		respondWithError(w, http.StatusUnauthorized, "Couldn't validate JWT")
 		return
 	}

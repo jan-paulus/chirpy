@@ -1,5 +1,5 @@
-package main
 
+package main
 import (
 	"encoding/json"
 	"log"
@@ -40,6 +40,8 @@ func main() {
 
 	mux.HandleFunc("GET /api/healthz", handlerReadiness)
 	mux.HandleFunc("GET /api/reset", cfg.handlerMetricsReset)
+	mux.HandleFunc("POST /api/refresh", cfg.handlerRefresh)
+	mux.HandleFunc("POST /api/revoke", cfg.handlerRevoke)
 
 	mux.HandleFunc("POST /api/login", cfg.handlerLoginUser)
 
