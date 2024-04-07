@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
 
 	"github.com/jan-paulus/chirpy/internal/database"
@@ -10,6 +11,7 @@ import (
 
 func (cfg *apiConfig) handlerGetChirps(w http.ResponseWriter, r *http.Request) {
 	s := r.URL.Query().Get("author_id")
+	sortOrder := r.URL.Query().Get("sort")
 
 	chirps, err := cfg.DB.GetChirps()
 	if err != nil {
@@ -18,8 +20,19 @@ func (cfg *apiConfig) handlerGetChirps(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if sortOrder == "desc" {
+		sort.SliceStable(chirps, func(i, j int) bool {
+			return chirps[i].Id > chirps[j].Id
+		})
+	} else {
+		sort.SliceStable(chirps, func(i, j int) bool {
+			return chirps[i].Id < chirps[j].Id
+		})
+	}
+
 	if s == "" {
 		respondWithJSON(w, http.StatusOK, chirps)
+		return
 	}
 
 	authorId, err := strconv.Atoi(s)
