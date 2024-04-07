@@ -1,7 +1,5 @@
 package database
 
-import "errors"
-
 type Chirp struct {
 	Id       int    `json:"id"`
 	Body     string `json:"body"`
@@ -61,7 +59,7 @@ func (db *DB) GetChirp(id int) (Chirp, error) {
 
 	chirp, ok := dbStructure.Chirps[id]
 	if !ok {
-		return Chirp{}, errors.New("Chirp does not exist")
+		return Chirp{}, ErrNotExist 
 	}
 
 	return chirp, nil

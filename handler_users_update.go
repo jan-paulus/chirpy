@@ -10,8 +10,9 @@ import (
 
 func (cfg *apiConfig) handlerUpdateUser(w http.ResponseWriter, r *http.Request) {
 	type response struct {
-		Id    int    `json:"id"`
-		Email string `json:"email"`
+		Id          int    `json:"id"`
+		Email       string `json:"email"`
+		IsChirpyRed bool   `json:"is_chirpy_red"`
 	}
 	type parameters struct {
 		Email    string `json:"email"`
@@ -55,6 +56,7 @@ func (cfg *apiConfig) handlerUpdateUser(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+
 	user, err := cfg.DB.UpdateUser(id, params.Email, hashedPassword)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't create user")
@@ -62,7 +64,8 @@ func (cfg *apiConfig) handlerUpdateUser(w http.ResponseWriter, r *http.Request) 
 	}
 
 	respondWithJSON(w, http.StatusOK, response{
-		Email: user.Email,
-		Id:    user.Id,
+		Email:       user.Email,
+		Id:          user.Id,
+		IsChirpyRed: user.IsChirpyRed,
 	})
 }

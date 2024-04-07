@@ -19,6 +19,8 @@ type DBStructure struct {
 	RefreshTokens map[string]RefreshToken `json:"refresh_tokens"`
 }
 
+var ErrNotExist = errors.New("resource does not exist")
+
 func NewDB(path string) (*DB, error) {
 	db := &DB{
 		path: path,

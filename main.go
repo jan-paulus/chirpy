@@ -1,5 +1,5 @@
-
 package main
+
 import (
 	"encoding/json"
 	"log"
@@ -14,6 +14,7 @@ type apiConfig struct {
 	fileserverHits int
 	DB             *database.DB
 	jwtSecret      string
+	polkaApiKey    string
 }
 
 func main() {
@@ -22,6 +23,7 @@ func main() {
 
 	godotenv.Load()
 	jwtSecret := os.Getenv("JWT_SECRET")
+	polkaApiKey := os.Getenv("POLKA_API_KEY")
 
 	db, err := database.NewDB("database.json")
 	if err != nil {
@@ -32,6 +34,7 @@ func main() {
 		fileserverHits: 0,
 		DB:             db,
 		jwtSecret:      jwtSecret,
+		polkaApiKey:    polkaApiKey,
 	}
 
 	mux := http.NewServeMux()
@@ -52,6 +55,8 @@ func main() {
 	mux.HandleFunc("GET /api/chirps", cfg.handlerGetChirps)
 	mux.HandleFunc("GET /api/chirps/{chirpID}", cfg.handlerGetChirp)
 	mux.HandleFunc("DELETE /api/chirps/{chirpID}", cfg.handlerDeleteChirp)
+
+	mux.HandleFunc("POST /api/polka/webhooks", cfg.webhookPolka)
 
 	mux.HandleFunc("GET /admin/metrics", cfg.handlerMetrics)
 

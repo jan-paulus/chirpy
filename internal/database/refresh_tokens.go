@@ -1,7 +1,6 @@
 package database
 
 import (
-	"errors"
 	"time"
 )
 
@@ -16,7 +15,7 @@ func (db *DB) CreateRefreshToken(token string) (RefreshToken, error) {
 	if err != nil {
 		return RefreshToken{}, err
 	}
-  
+
 	refreshToken := RefreshToken{
 		Token:   token,
 		Revoked: false,
@@ -40,7 +39,7 @@ func (db *DB) RevokeRefreshToken(token string) (RefreshToken, error) {
 
 	refreshToken, ok := dbStructure.RefreshTokens[token]
 	if !ok {
-		return RefreshToken{}, errors.New("Refresh token does not exist")
+		return RefreshToken{}, ErrNotExist
 	}
 
 	refreshToken.RevokedAt = time.Now().UTC().Format(time.UnixDate)
@@ -67,5 +66,5 @@ func (db *DB) GetRefreshToken(token string) (RefreshToken, error) {
 		return refreshToken, nil
 	}
 
-	return RefreshToken{}, errors.New("Refresh token does not exist")
-}
+	return RefreshToken{}, ErrNotExist
+} 

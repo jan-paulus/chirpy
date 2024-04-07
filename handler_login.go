@@ -13,6 +13,7 @@ func (cfg *apiConfig) handlerLoginUser(w http.ResponseWriter, r *http.Request) {
 		Id           int    `json:"id"`
 		Email        string `json:"email"`
 		Token        string `json:"token"`
+		IsChirpyRed  bool   `json:"is_chirpy_red"`
 		RefreshToken string `json:"refresh_token"`
 	}
 	type parameters struct {
@@ -61,6 +62,7 @@ func (cfg *apiConfig) handlerLoginUser(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, response{
 		Id:           user.Id,
 		Email:        user.Email,
+		IsChirpyRed:  user.IsChirpyRed,
 		Token:        token,
 		RefreshToken: refreshToken,
 	})
