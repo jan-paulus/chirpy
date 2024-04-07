@@ -4,7 +4,7 @@ Chripy is a social network similar to Twitter. This repository contains Chripys 
 
 ## Context
 
-Chirpy was built as an excersise to learn how to build webservers with Go.
+Chirpy was built as an exercise to learn how to build webservers with Go.
 
 ## System Endpoints
 
